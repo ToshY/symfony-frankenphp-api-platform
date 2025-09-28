@@ -1,0 +1,80 @@
+version: '3'
+
+tasks:
+  default:
+    cmds:
+      - task --list
+
+  up:
+    desc: Up services
+    aliases:
+      - u
+    cmds:
+      - docker compose --env-file .env --env-file .env.local --env-file .env.dev up -d --build --force-recreate --remove-orphans --pull always --wait
+
+  down:
+    desc: Down services
+    aliases:
+      - d
+    cmds:
+      - docker compose down {{.CLI_ARGS | default "--remove-orphans"}}
+
+  pull:
+    desc: Pull latest images
+    aliases:
+      - p
+    cmds:
+      - docker compose pull
+
+  config:
+    desc: Show config
+    cmds:
+      - docker compose --env-file .env --env-file .env.local --env-file .env.dev config
+
+  config:environment:
+    desc: Show config environment variables
+    cmds:
+      - docker compose --env-file .env --env-file .env.local --env-file .env.dev config --environment
+
+  start:
+    desc: Start services
+    aliases:
+      - on
+    cmds:
+      - docker compose start {{.CLI_ARGS}}
+
+  stop:
+    desc: Stop services
+    aliases:
+      - off
+    cmds:
+      - docker compose stop {{.CLI_ARGS}}
+
+  restart:
+    desc: Restart service containers
+    cmds:
+      - docker compose restart {{.CLI_ARGS}} --no-deps
+
+  recreate:
+    desc: Force recreate
+    cmds:
+      - docker compose up {{.CLI_ARGS}} -d --build --force-recreate
+
+  reset:
+    desc: Resets service by stopping and removing associated volumes
+    cmds:
+      - docker compose rm -svf {{.CLI_ARGS}}
+
+  remove:
+    desc: Removes stopped service containers
+    aliases:
+      - rm
+    cmds:
+      - docker compose rm -svf {{.CLI_ARGS}}
+
+  logs:
+    desc: Show logs
+    aliases:
+      - l
+    cmds:
+      - docker compose logs -ft {{.CLI_ARGS}}

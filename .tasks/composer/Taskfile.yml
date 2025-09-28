@@ -1,0 +1,62 @@
+version: '3'
+
+tasks:
+  default:
+    cmds:
+      - task --list
+
+  install:dev:
+    desc: Composer install dev
+    aliases:
+      - i:d
+    cmds:
+      - task app:shell -- composer install --no-cache --no-interaction --prefer-dist
+
+  install:prod:
+    desc: Composer install prod
+    aliases:
+      - i:p
+    cmds:
+      - task app:shell -- composer install --no-cache --no-interaction --prefer-dist --no-progress --prefer-dist --no-dev --optimize-autoloader
+
+  audit:
+    desc: Composer audit
+    aliases:
+      - i:au
+    cmds:
+      - task app:shell -- composer audit --no-cache
+
+  autoload:
+    desc: Composer dump autoload
+    aliases:
+      - i:a
+    cmds:
+      - task app:shell -- composer dump-autoload --no-cache --no-interaction
+
+  require:
+    desc: Composer require package
+    aliases:
+      - i:r
+    cmds:
+      - task app:shell -- composer require {{.CLI_ARGS}} --no-cache
+
+  remove:
+    desc: Composer remove package
+    aliases:
+      - i:rm
+    cmds:
+      - task app:shell -- composer remove {{.CLI_ARGS}} --no-cache
+
+  update:
+    desc: Composer update package
+    aliases:
+      - i:u
+    cmds:
+      - task app:shell -- composer update {{.CLI_ARGS}} --no-cache
+
+  validate:
+    desc: Composer validate
+    aliases:
+      - v
+    cmds:
+      - task app:shell -- composer validate --no-check-publish

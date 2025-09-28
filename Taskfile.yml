@@ -1,0 +1,103 @@
+version: '3'
+
+includes:
+  app:
+    taskfile: ./.tasks/app
+    aliases:
+      - a
+  composer:
+    taskfile: ./.tasks/composer
+    aliases:
+      - c
+  docker:
+    taskfile: ./.tasks/docker
+    aliases:
+      - d
+
+dotenv:
+  - .env.dev
+  - .env.local
+  - .env
+
+env:
+  UID:
+    sh: id -u
+  GID:
+    sh: id -g
+  TTY: ''
+
+tasks:
+  default:
+    cmds:
+      - task --list
+
+  init:
+    desc: Initialisation of dotenv
+    silent: true
+    cmds:
+      - rsync -q --ignore-missing-args --ignore-existing $(pwd)/.env $(pwd)/.env.local
+
+  up:
+    desc: Setup application
+    silent: true
+    cmds:
+      - task init
+      - task docker:up
+      - printf "Visit \033[32;4m%s\033[0m to use your application\n" "https://${APP_DOMAIN}"
+
+  logs:
+    desc: Show logs
+    cmds:
+      - task docker:logs
+
+  # Sync template
+  sync:
+    desc: Sync template
+    summary: |
+      Sync remote template with current repository.
+
+      @see https://github.com/coopTilleuls/template-sync
+
+      Resolve conflicts where needed and "git cherry-pick --continue" after.
+    vars:
+      TEMPLATE: https://github.com/dunglas/symfony-docker
+      SYNC_SCRIPT: https://raw.githubusercontent.com/coopTilleuls/template-sync/main/template-sync.sh
+    cmds:
+      - curl -sSL {{.SYNC_SCRIPT}} | sh -s -- {{.TEMPLATE}}
+
+  # Contribute
+  qa:
+    desc: Quality assurance tasks
+    cmds:
+      - task: phpcs
+      - task: phpstan
+
+  grum:init:
+    desc: Init GrumPHP
+    cmds:
+      - docker compose run --rm --no-deps $TTY php vendor/bin/grumphp git:init
+
+  phpcs:
+    desc: PHPCS dry run
+    cmds:
+      - docker compose run --rm --no-deps$TTY php vendor/bin/php-cs-fixer fix --dry-run -v --diff
+
+  phpcs:fix:
+    desc: PHPCS fix
+    cmds:
+      - docker compose run --rm --no-deps $TTY php vendor/bin/php-cs-fixer fix -v
+
+  phpstan:
+    desc: PHPStan run
+    cmds:
+      - docker compose run --rm --no-deps $TTY php vendor/bin/phpstan analyse --error-format=table
+
+  phpstan:baseline:
+    desc: PHPStan update baseline
+    cmds:
+      - docker compose run --rm --no-deps $TTY php vendor/bin/phpstan --generate-baseline
+
+  unused:
+    desc: Composer unused
+    cmds:
+      - docker compose run --rm --no-deps $TTY php vendor/bin/composer-unused -vvv

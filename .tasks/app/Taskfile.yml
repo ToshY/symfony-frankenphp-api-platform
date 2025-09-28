@@ -1,0 +1,74 @@
+version: '3'
+
+tasks:
+  default:
+    cmds:
+      - task --list
+
+  shell:
+    desc: Login
+    aliases:
+      - s
+    cmds:
+      - docker compose exec $TTY php {{.CLI_ARGS | default "/bin/bash"}}
+
+  console:
+    desc: Symfony bin/console
+    aliases:
+      - c
+    cmds:
+      - docker compose exec $TTY php bin/console {{.CLI_ARGS}}
+
+  install:assets:
+    desc: Install assets
+    aliases:
+      - i:a
+    cmds:
+      - docker compose exec $TTY php bin/console assets:install --symlink public
+
+  migration:create:
+    desc: Create new migration file in `./migrations`
+    aliases:
+      - m:c
+    cmds:
+      - docker compose exec $TTY php bin/console make:migration
+
+  migration:create:empty:
+    desc: Create new empty migration file in `./migrations`
+    aliases:
+      - m:c:e
+    cmds:
+      - docker compose exec $TTY php bin/console doctrine:migrations:generate
+
+  migration:execute:
+    desc: Run specific migration up or down by migration class name
+    summary: |
+      Example: task app:migration:execute m="Version20221228235715" d="up"
+    aliases:
+      - m:e
+    vars:
+      MIGRATION: '{{.m}}'
+      DIRECTION: '{{.d}}'
+    cmds:
+      - docker compose exec $TTY php bin/console doctrine:migrations:execute "DoctrineMigrations\{{.MIGRATION}}" --{{.DIRECTION}}
+
+  migration:run:
+    desc: Run migrations
+    aliases:
+      - m:r
+    cmds:
+      - docker compose exec $TTY php bin/console doctrine:migrations:migrate -n -vv --allow-no-migration --query-time
+
+  logs:
+    desc: App show container logs
+    aliases:
+      - l
+    cmds:
+      - docker compose logs -ft php
+
+  cache:clear:
+    desc: App cache clear
+    aliases:
+      - c:c
+    cmds:
+      - docker compose exec $TTY php bin/console cache:clear -v

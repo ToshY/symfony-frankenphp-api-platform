@@ -1,0 +1,64 @@
+name: symfony-frankenphp-openapi
+
+x-restart: &restart-stopped
+  restart: unless-stopped
+
+services:
+  php:
+    image: ${IMAGES_PREFIX:-}app-php
+    restart: unless-stopped
+    environment:
+      SERVER_NAME: :80
+      DATABASE_URL: ${DATABASE_URL}
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+    labels:
+      traefik.enable: true
+      traefik.docker.network: proxy
+      traefik.http.routers.frankenphp.priority: 100
+      traefik.http.routers.frankenphp.tls: true
+      traefik.http.routers.frankenphp.entrypoints: websecure
+      traefik.http.routers.frankenphp.rule: Host(`${APP_DOMAIN:-frankenphp.local}`)
+      traefik.http.routers.frankenphp.service: frankenphp
+      traefik.http.services.frankenphp.loadbalancer.server.port: 80
+    logging:
+      options:
+        max-size: "25mb"
+        max-file: "10"
+    networks:
+      - symfony-frankenphp-openapi
+      - proxy
+
+  postgres:
+    image: postgres:${POSTGRES_IMAGE_VERSION}-alpine
+    <<: [*restart-stopped]
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}" ]
+      start_period: 20s
+      interval: 30s
+      retries: 5
+      timeout: 5s
+    environment:
+      POSTGRES_DB: ${POSTGRES_DATABASE}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres:/var/lib/postgresql/data
+      - .docker/postgres/init:/docker-entrypoint-initdb.d
+    networks:
+      - symfony-frankenphp-openapi
+
+volumes:
+  caddy_data:
+    driver: local
+  caddy_config:
+    driver: local
+  postgres:
+    driver: local
+
+networks:
+  symfony-frankenphp-openapi:
+    driver: bridge
+  proxy:
+    external: true

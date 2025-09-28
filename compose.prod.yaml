@@ -1,0 +1,14 @@
+name: symfony-frankenphp-openapi
+
+services:
+  php:
+    build:
+      context: .
+      target: frankenphp_prod
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+        FRANKENPHP_IMAGE_VERSION: ${FRANKENPHP_IMAGE_VERSION:-1-php8.4}
+    user: "${UID:-1000}:${GID:-1000}"
+    environment:
+      APP_SECRET: ${APP_SECRET}

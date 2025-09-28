@@ -1,0 +1,24 @@
+name: Security Check
+
+on:
+  schedule:
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+
+jobs:
+  check:
+    name: Security check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Check for vulnerabilities
+        uses: symfonycorp/security-checker-action@v5
+        with:
+          disable-exit-code: 1
+        id: security-check
+
+      - name: Display vulnerabilities as JSON
+        run: echo ${{ steps.security-check.outputs.vulns }}
