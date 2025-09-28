@@ -43,6 +43,8 @@ tasks:
     cmds:
       - task init
       - task docker:up
+      - task app:cache:clear
+      - task app:assets:install
       - printf "Visit \033[32;4m%s\033[0m to use your application\n" "https://${APP_DOMAIN}"
 
   logs:

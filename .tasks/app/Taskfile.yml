@@ -19,12 +19,19 @@ tasks:
     cmds:
       - docker compose exec $TTY php bin/console {{.CLI_ARGS}}
 
-  install:assets:
+  assets:install:
     desc: Install assets
     aliases:
-      - i:a
+      - a:i
     cmds:
-      - docker compose exec $TTY php bin/console assets:install --symlink public
+      - docker compose exec $TTY php bin/console assets:install public
+
+  cache:clear:
+    desc: App cache clear
+    aliases:
+      - c:c
+    cmds:
+      - docker compose exec $TTY php bin/console cache:clear -v
 
   migration:create:
     desc: Create new migration file in `./migrations`
@@ -66,9 +73,3 @@ tasks:
     cmds:
       - docker compose logs -ft php
 
-  cache:clear:
-    desc: App cache clear
-    aliases:
-      - c:c
-    cmds:
-      - docker compose exec $TTY php bin/console cache:clear -v
