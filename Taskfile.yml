@@ -53,8 +53,8 @@ tasks:
       - task docker:logs
 
   # Sync template
-  sync:
-    desc: Sync template
+  sync:template:original:
+    desc: Sync template dunglas/symfony-docker
     summary: |
       Sync remote template with current repository.
 
@@ -63,6 +63,14 @@ tasks:
       Resolve conflicts where needed and "git cherry-pick --continue" after.
     vars:
       TEMPLATE: https://github.com/dunglas/symfony-docker
+      SYNC_SCRIPT: https://raw.githubusercontent.com/coopTilleuls/template-sync/main/template-sync.sh
+    cmds:
+      - curl -sSL {{.SYNC_SCRIPT}} | sh -s -- {{.TEMPLATE}}
+
+  sync:template:upstream:
+    desc: Sync template ToshY/symfony-frankenphp-api-platform
+    vars:
+      TEMPLATE: https://github.com/ToshY/symfony-frankenphp-api-platform
       SYNC_SCRIPT: https://raw.githubusercontent.com/coopTilleuls/template-sync/main/template-sync.sh
     cmds:
       - curl -sSL {{.SYNC_SCRIPT}} | sh -s -- {{.TEMPLATE}}

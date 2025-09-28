@@ -64,11 +64,11 @@ greeted by Symfony's default landing page.
 If you started the template from this repository, you can sync with the latest changes by running the following command:
 
 ```shell
-task sync
+task sync:template:upstream
 ```
 
 > [!NOTE]
-> This uses [coopTilleuls/template-sync](https://github.com/coopTilleuls/template-sync) to sync the template.
+> The command `task sync:template:upstream` will sync from the current template repository, whereas  `task sync:template:upstream` will sync from the `dunglas/symfony-docker` repository.
 
 ## 🧰 DIY
 
