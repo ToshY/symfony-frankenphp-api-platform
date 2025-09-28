@@ -40,6 +40,11 @@ task init
 
 You can now tweak the values in the `.env.local` if needed.
 
+> [!IMPORTANT]
+> At least the following values should be set in `.env.local` to up the current stack:
+> * `POSTGRES_USER`
+> * `POSTGRES_PASSWORD`
+
 ### Start application services
 
 ```shell
