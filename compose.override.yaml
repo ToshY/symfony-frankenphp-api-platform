@@ -6,10 +6,10 @@ services:
       context: .
       target: frankenphp_dev
       args:
-        UID: ${UID:-1000}
-        GID: ${GID:-1000}
+        PUID: ${PUID:-1000}
+        PGID: ${PGID:-1000}
         FRANKENPHP_IMAGE_VERSION: ${FRANKENPHP_IMAGE_VERSION:-1-php8.4}
-    user: "${UID:-1000}:${GID:-1000}"
+    user: "${PUID:-1000}:${PGID:-1000}"
     environment:
       FRANKENPHP_WORKER_CONFIG: watch
       XDEBUG_MODE: "${XDEBUG_MODE:-off}"

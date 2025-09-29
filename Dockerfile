@@ -1,7 +1,7 @@
 #syntax=docker/dockerfile:1
 ARG FRANKENPHP_IMAGE_VERSION=${FRANKENPHP_IMAGE_VERSION:1-php8.4}
-ARG UID=${UID:-1000}
-ARG GID=${GID:-1000}
+ARG PUID=${PUID:-1000}
+ARG PGID=${PGID:-1000}
 ARG USER=${USER:-frankenphp}
 ARG GROUP=${GROUP:-frankenphp}
 
@@ -16,8 +16,8 @@ FROM dunglas/frankenphp:${FRANKENPHP_IMAGE_VERSION} AS frankenphp_upstream
 # Base FrankenPHP image
 FROM frankenphp_upstream AS frankenphp_base
 
-ARG UID
-ARG GID
+ARG PUID
+ARG PGID
 ARG USER
 ARG GROUP
 
@@ -59,10 +59,10 @@ COPY --link --chmod=755 frankenphp/docker-entrypoint.sh /usr/local/bin/docker-en
 COPY --link frankenphp/Caddyfile /etc/frankenphp/Caddyfile
 
 RUN set -eux; \
-    groupadd -g $GID $GROUP; \
-    useradd -u $UID -g $GID --no-create-home $USER; \
+    groupadd -g $PGID $GROUP; \
+    useradd -u $PUID -g $PGID --no-create-home $USER; \
     mkdir -p var/cache var/log; \
-    chown -R $UID:$GID /data/ /config/ var/cache var/log
+    chown -R $PUID:$PGID /data/ /config/ var/cache var/log
 
 ENTRYPOINT ["docker-entrypoint"]
 
@@ -94,8 +94,8 @@ CMD [ "frankenphp", "run", "--config", "/etc/frankenphp/Caddyfile", "--watch" ]
 # Prod FrankenPHP image
 FROM frankenphp_base AS frankenphp_prod
 
-ARG UID
-ARG GID
+ARG PUID
+ARG PGID
 ARG USER
 
 ENV APP_ENV=prod
@@ -119,6 +119,6 @@ RUN set -eux; \
 	composer dump-env prod; \
 	composer run-script --no-dev post-install-cmd; \
 	chmod +x bin/console; sync; \
-	chown -R $UID:$GID var/cache var/log
+	chown -R $PUID:$PGID var/cache var/log
 
 USER $USER

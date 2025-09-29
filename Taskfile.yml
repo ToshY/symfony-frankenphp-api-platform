@@ -20,9 +20,9 @@ dotenv:
   - .env
 
 env:
-  UID:
+  PUID:
     sh: id -u
-  GID:
+  PGID:
     sh: id -g
   TTY: ''
 
