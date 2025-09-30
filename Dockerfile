@@ -23,8 +23,6 @@ ARG GROUP
 
 WORKDIR /app
 
-VOLUME /app/var/
-
 # persistent / runtime deps
 # hadolint ignore=DL3008
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -62,7 +60,7 @@ RUN set -eux; \
     groupadd -g $PGID $GROUP; \
     useradd -u $PUID -g $PGID --no-create-home $USER; \
     mkdir -p var/cache var/log; \
-    chown -R $PUID:$PGID /data/ /config/ var/cache var/log
+    chown -R $PUID:$PGID /data/ /config/ var/
 
 ENTRYPOINT ["docker-entrypoint"]
 
@@ -119,6 +117,6 @@ RUN set -eux; \
 	composer dump-env prod; \
 	composer run-script --no-dev post-install-cmd; \
 	chmod +x bin/console; sync; \
-	chown -R $PUID:$PGID var/cache var/log
+	chown -R $PUID:$PGID var/
 
 USER $USER
